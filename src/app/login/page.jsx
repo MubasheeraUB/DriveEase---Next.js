@@ -82,12 +82,12 @@ export default function LoginPage() {
             <img
               src="/login-hero.png"
               alt=""
-              className="absolute inset-0 w-full h-full object-cover object-bottom pointer-events-none select-none [mask-image:linear-gradient(to_bottom,transparent_0%,black_14%,black_78%,rgba(0,0,0,.25)_96%,transparent_100%)]"
+              className="absolute inset-0 w-full h-full object-cover object-bottom pointer-events-none select-none [mask-image:linear-gradient(to_bottom,transparent_0%,black_14%,black_88%,rgba(0,0,0,.35)_97%,transparent_100%)]"
             />
           </div>
 
-          {/* Feature cards — slight overlap onto the road like the reference */}
-          <div className="relative z-10 -mt-12 mx-2 bg-white rounded-2xl shadow-[0_10px_40px_rgba(15,23,42,.12)] grid grid-cols-4 divide-x divide-[#EDF2F7]">
+          {/* Feature cards — minimal overlap so the road under the car stays visible */}
+          <div className="relative z-10 -mt-3 mx-2 bg-white rounded-2xl shadow-[0_10px_40px_rgba(15,23,42,.12)] grid grid-cols-4 divide-x divide-[#EDF2F7]">
             <Feature icon={<FiUsers size={22} />} tint="bg-[#EFF6FF] text-[#2563EB]" label={"Student\nManagement"} />
             <Feature icon={<FiCalendar size={22} />} tint="bg-[#ECFDF5] text-[#10B981]" label={"Class\nScheduling"} />
             <Feature icon={<FiCreditCard size={22} />} tint="bg-[#F5F3FF] text-[#8B5CF6]" label={"Payment\nTracking"} />
