@@ -1,0 +1,139 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        Int      @id @default(autoincrement())
+  name      String
+  email     String   @unique
+  password  String
+  role      String   @default("user")
+  createdAt DateTime @default(now())
+}
+
+model Driver {
+  id                Int                @id @default(autoincrement())
+  fullName          String
+  email             String             @unique
+  phone             String
+  licenseNumber     String             @unique
+  vehicleType       String
+  address           String
+  status            String             @default("active")
+  createdAt         DateTime           @default(now())
+  availability      String             @default("available")
+  experienceYears   Int
+  joiningDate       DateTime           @default(now())
+  licenseExpiry     DateTime
+  updatedAt         DateTime?          @updatedAt
+  trainingSchedules TrainingSchedule[]
+  courses           Course[]
+}
+
+model Student {
+  id                Int                @id @default(autoincrement())
+  fullName          String
+  email             String?            @unique
+  phone             String
+  dateOfBirth       DateTime
+  gender            String
+  address           String
+  guardianName      String?
+  guardianPhone     String?
+  licenseType       String
+  learningLicenseNo String?
+  coursePackage     String
+  joiningDate       DateTime           @default(now())
+  status            String             @default("active")
+  createdAt         DateTime           @default(now())
+  updatedAt         DateTime           @updatedAt
+  payments          Payment[]
+  trainingSchedules TrainingSchedule[]
+}
+
+model Vehicle {
+  id                Int                @id @default(autoincrement())
+  vehicleName       String
+  vehicleNumber     String             @unique
+  vehicleType       String
+  brand             String
+  model             String
+  fuelType          String
+  registrationDate  DateTime
+  insuranceExpiry   DateTime
+  rcExpiry          DateTime
+  pollutionExpiry   DateTime
+  seatingCapacity   Int
+  status            String             @default("active")
+  availability      String             @default("available")
+  createdAt         DateTime           @default(now())
+  updatedAt         DateTime           @updatedAt
+  trainingSchedules TrainingSchedule[]
+}
+
+model TrainingSchedule {
+  id           Int          @id @default(autoincrement())
+  studentId    Int
+  driverId     Int
+  vehicleId    Int
+  trainingDate DateTime
+  startTime    String
+  endTime      String
+  sessionType  String
+  status       String       @default("scheduled")
+  remarks      String?
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
+  attendances  Attendance[]
+  driver       Driver       @relation(fields: [driverId], references: [id])
+  student      Student      @relation(fields: [studentId], references: [id])
+  vehicle      Vehicle      @relation(fields: [vehicleId], references: [id])
+}
+
+model Attendance {
+  id                 Int              @id @default(autoincrement())
+  trainingScheduleId Int
+  attendanceDate     DateTime
+  status             String
+  remarks            String?
+  createdAt          DateTime         @default(now())
+  updatedAt          DateTime         @updatedAt
+  trainingSchedule   TrainingSchedule @relation(fields: [trainingScheduleId], references: [id])
+}
+
+model Course {
+  id          Int      @id @default(autoincrement())
+  name        String
+  code        String   @unique
+  category    String
+  driverId    Int?
+  duration    String
+  fee         Float
+  enrollments Int      @default(0)
+  status      String   @default("active")
+  description String?
+  imageUrl    String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  driver      Driver?  @relation(fields: [driverId], references: [id])
+}
+
+model Payment {
+  id            Int      @id @default(autoincrement())
+  studentId     Int
+  totalAmount   Float
+  paidAmount    Float
+  balanceAmount Float
+  paymentDate   DateTime
+  paymentMethod String
+  paymentStatus String   @default("partial")
+  remarks       String?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  student       Student  @relation(fields: [studentId], references: [id])
+}
