@@ -2,7 +2,15 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { FiMail, FiLock, FiEye, FiEyeOff, FiUsers, FiCalendar, FiCreditCard } from "react-icons/fi";
+import {
+  FiMail,
+  FiLock,
+  FiEye,
+  FiEyeOff,
+  FiUsers,
+  FiCalendar,
+  FiCreditCard,
+} from "react-icons/fi";
 import { FaCar } from "react-icons/fa";
 import { BsShieldFillCheck } from "react-icons/bs";
 
@@ -38,7 +46,10 @@ export default function LoginPage() {
 
       // Store token in both localStorage and cookie for middleware
       localStorage.setItem("token", data.token);
-      localStorage.setItem("user", JSON.stringify({ id: data.id, name: data.name, email: data.email }));
+      localStorage.setItem(
+        "user",
+        JSON.stringify({ id: data.id, name: data.name, email: data.email }),
+      );
 
       // Set cookie for middleware auth
       document.cookie = `token=${data.token}; path=/; max-age=${7 * 24 * 60 * 60}`;
@@ -57,56 +68,77 @@ export default function LoginPage() {
   return (
     <div className="h-screen overflow-hidden bg-[#EDF2F9] flex items-center justify-center p-3 md:p-4">
       <div className="w-full max-w-[1150px] h-full max-h-[780px] bg-white rounded-[24px] shadow-[0_20px_60px_rgba(15,23,42,.08)] overflow-hidden flex">
-
         {/* ================= LEFT PANEL ================= */}
-        <div className="hidden lg:flex w-[55%] flex-col bg-gradient-to-b from-[#E9F1FB] via-[#F2F7FD] to-[#EAF1FA] relative px-8 pt-6 pb-4 overflow-hidden">
-
+        <div className="hidden lg:flex w-[60%] flex-col bg-gradient-to-b from-[#E9F1FB] via-[#F2F7FD] to-[#EAF1FA] relative px-8 pt-6 pb-4 overflow-hidden">
           {/* Animated Logo */}
-          <div className="relative z-10">
+          <div className="relative z-10 scale-110 origin-top-left">
             <AnimatedLogo />
           </div>
 
           {/* Heading */}
-          <h1 className="relative z-10 text-[30px] leading-tight font-extrabold text-[#0F172A] mt-4 logo-fade-up" style={{ animationDelay: ".25s" }}>
+          <h3
+            className="relative z-10 text-[34px] leading-[1.15] font-extrabold text-[#0F172A] mt-5 logo-fade-up"
+            style={{ animationDelay: ".25s" }}
+          >
             Smart Driving Institute
             <br />
             Management System
-          </h1>
-          <p className="relative z-10 text-[#475569] text-[14px] leading-relaxed mt-2.5 max-w-sm logo-fade-up" style={{ animationDelay: ".4s" }}>
+          </h3>
+
+          {/* Description */}
+          <p
+            className="relative z-10 text-[#475569] text-[16px] leading-relaxed mt-3 max-w-md logo-fade-up"
+            style={{ animationDelay: ".4s" }}
+          >
             Manage students, instructors, vehicles, classes and payments
             efficiently from a single powerful dashboard.
           </p>
 
-          {/* Illustration — fills the band width; only empty sky gets cropped */}
-          <div className="flex-1 min-h-0 relative -mx-8 mt-1">
-            <img
-              src="/login-hero.png"
-              alt=""
-              className="absolute inset-0 w-full h-full object-cover object-bottom pointer-events-none select-none [mask-image:linear-gradient(to_bottom,transparent_0%,black_14%,black_88%,rgba(0,0,0,.35)_97%,transparent_100%)]"
+          {/* Illustration */}
+          <div className="flex-[1.6] min-h-0 relative -mx-8 mt-4">
+            <img src="/login-hero.png" alt="" className="absolute inset-0 w-full h-full scale-110 object-cover object-bottom pointer-events-none select-none [mask-image:linear-gradient(to_bottom,black_0%,black_90%,transparent_100%)]"/>
+          </div>
+
+          {/* Feature Cards */}
+          <div className="relative z-10 -mt-4 mx-2 bg-white rounded-3xl shadow-[0_10px_40px_rgba(15,23,42,.12)] grid grid-cols-4 divide-x divide-[#EDF2F7]">
+            <Feature
+              icon={<FiUsers size={28} />}
+              tint="bg-[#EFF6FF] text-[#2563EB]"
+              label={"Student\nManagement"}
+            />
+
+            <Feature
+              icon={<FiCalendar size={28} />}
+              tint="bg-[#ECFDF5] text-[#10B981]"
+              label={"Class\nScheduling"}
+            />
+
+            <Feature
+              icon={<FiCreditCard size={28} />}
+              tint="bg-[#F5F3FF] text-[#8B5CF6]"
+              label={"Payment\nTracking"}
+            />
+
+            <Feature
+              icon={<FaCar size={28} />}
+              tint="bg-[#FFF7ED] text-[#F59E0B]"
+              label={"Vehicle\nManagement"}
             />
           </div>
 
-          {/* Feature cards — minimal overlap so the road under the car stays visible */}
-          <div className="relative z-10 -mt-3 mx-2 bg-white rounded-2xl shadow-[0_10px_40px_rgba(15,23,42,.12)] grid grid-cols-4 divide-x divide-[#EDF2F7]">
-            <Feature icon={<FiUsers size={22} />} tint="bg-[#EFF6FF] text-[#2563EB]" label={"Student\nManagement"} />
-            <Feature icon={<FiCalendar size={22} />} tint="bg-[#ECFDF5] text-[#10B981]" label={"Class\nScheduling"} />
-            <Feature icon={<FiCreditCard size={22} />} tint="bg-[#F5F3FF] text-[#8B5CF6]" label={"Payment\nTracking"} />
-            <Feature icon={<FaCar size={22} />} tint="bg-[#FFF7ED] text-[#F59E0B]" label={"Vehicle\nManagement"} />
-          </div>
-
-          {/* Bottom note */}
-          <div className="relative z-10 flex items-center justify-center gap-2 mt-4 text-[#334155] text-[13px] font-medium">
-            <BsShieldFillCheck className="text-[#2563EB]" size={17} />
+          {/* Bottom Note */}
+          <div className="relative z-10 flex items-center justify-center gap-2 mt-5 text-[#334155] text-[14px] font-medium">
+            <BsShieldFillCheck className="text-[#2563EB]" size={18} />
             <span>Secure. Reliable. Built for Driving Institutes.</span>
           </div>
         </div>
 
         {/* ================= RIGHT PANEL ================= */}
         <div className="flex-1 flex items-center justify-center bg-white p-5 md:p-8 overflow-y-auto">
-          <div className="w-full max-w-[420px] bg-white border border-[#EBF0F6] rounded-2xl shadow-[0_8px_30px_rgba(15,23,42,.06)] p-7 md:p-8">
-
+          <div className="w-full max-w-[400px] bg-white border border-[#EBF0F6] rounded-2xl shadow-[0_8px_30px_rgba(15,23,42,.06)] p-7 md:p-8">
             <h2 className="text-[26px] font-extrabold text-[#0F172A]">
-              Welcome Back <span className="inline-block origin-bottom-right wave">👋</span>
+              Welcome Back{" "}
+              <span className="inline-block origin-bottom-right wave">👋</span>
             </h2>
             <p className="text-[#64748B] text-[14px] mt-1.5 mb-6">
               Login to manage your driving institute operations.
@@ -115,9 +147,14 @@ export default function LoginPage() {
             <form onSubmit={handleLogin} className="space-y-4">
               {/* EMAIL */}
               <div>
-                <label className="text-[#0F172A] text-[13.5px] font-semibold block mb-1.5">Email Address</label>
+                <label className="text-[#0F172A] text-[13.5px] font-semibold block mb-1.5">
+                  Email Address
+                </label>
                 <div className="relative">
-                  <FiMail className="absolute left-4 top-1/2 -translate-y-1/2 text-[#64748B]" size={19} />
+                  <FiMail
+                    className="absolute left-4 top-1/2 -translate-y-1/2 text-[#64748B]"
+                    size={19}
+                  />
                   <input
                     type="email"
                     name="email"
@@ -132,9 +169,14 @@ export default function LoginPage() {
 
               {/* PASSWORD */}
               <div>
-                <label className="text-[#0F172A] text-[13.5px] font-semibold block mb-1.5">Password</label>
+                <label className="text-[#0F172A] text-[13.5px] font-semibold block mb-1.5">
+                  Password
+                </label>
                 <div className="relative">
-                  <FiLock className="absolute left-4 top-1/2 -translate-y-1/2 text-[#64748B]" size={19} />
+                  <FiLock
+                    className="absolute left-4 top-1/2 -translate-y-1/2 text-[#64748B]"
+                    size={19}
+                  />
                   <input
                     type={showPassword ? "text" : "password"}
                     name="password"
@@ -149,17 +191,27 @@ export default function LoginPage() {
                     onClick={() => setShowPassword((p) => !p)}
                     className="absolute right-4 top-1/2 -translate-y-1/2 text-[#64748B] hover:text-[#0F172A]"
                   >
-                    {showPassword ? <FiEyeOff size={19} /> : <FiEye size={19} />}
+                    {showPassword ? (
+                      <FiEyeOff size={19} />
+                    ) : (
+                      <FiEye size={19} />
+                    )}
                   </button>
                 </div>
               </div>
 
               <div className="flex justify-between items-center text-[13px] pt-0.5">
                 <label className="text-[#0F172A] font-medium flex items-center gap-2.5 cursor-pointer">
-                  <input type="checkbox" className="w-[18px] h-[18px] rounded border-[#CBD5E1] accent-[#2563EB]" />
+                  <input
+                    type="checkbox"
+                    className="w-[18px] h-[18px] rounded border-[#CBD5E1] accent-[#2563EB]"
+                  />
                   Remember me
                 </label>
-                <button type="button" className="text-[#2563EB] font-medium hover:text-[#1D4ED8]">
+                <button
+                  type="button"
+                  className="text-[#2563EB] font-medium hover:text-[#1D4ED8]"
+                >
                   Forgot Password?
                 </button>
               </div>
@@ -242,42 +294,91 @@ function AnimatedLogo() {
   return (
     <div>
       <div className="flex items-center gap-3">
-      {/* Icon */}
-      <svg width="56" height="56" viewBox="0 0 100 100" fill="none" aria-hidden="true">
-        {/* Swoosh arc */}
-        <path
-          className="logo-swoosh"
-          d="M36 9 C68 9, 89 28, 89 52 C89 71, 77 85, 60 90"
-          stroke="#2563EB"
-          strokeWidth="11"
-          strokeLinecap="round"
-        />
-        {/* Speed lines */}
-        <rect className="speed-line"   x="4" y="38" width="26" height="5.5" rx="2.75" fill="#2563EB" />
-        <rect className="speed-line speed-line-2" x="1" y="50" width="20" height="5.5" rx="2.75" fill="#2563EB" />
-        <rect className="speed-line speed-line-3" x="7" y="62" width="13" height="5.5" rx="2.75" fill="#2563EB" />
-        {/* Car (front view) */}
-        <g className="logo-car-group">
-          <path d="M36 56 C36 46, 42 40, 52 40 C62 40, 68 46, 68 56 Z" fill="#1E3A8A" />
-          <path d="M40 54 C41 47.5, 45 44, 52 44 C59 44, 63 47.5, 64 54 Z" fill="#DBEAFE" />
-          <rect x="31" y="55" width="42" height="17" rx="6" fill="#1E3A8A" />
-          <rect x="36" y="60" width="9" height="4" rx="2" fill="#FDE68A" />
-          <rect x="59" y="60" width="9" height="4" rx="2" fill="#FDE68A" />
-          <rect x="47" y="61" width="10" height="2.5" rx="1.25" fill="#93C5FD" />
-        </g>
-        {/* Road hump */}
-        <path d="M10 95 Q52 70 94 95 L10 95 Z" fill="#1E3A8A" />
-        <path d="M48 84 L51 78 L53 78 L56 84 Z" fill="#fff" opacity=".85" />
-      </svg>
+        {/* Icon */}
+        <svg
+          width="56"
+          height="56"
+          viewBox="0 0 100 100"
+          fill="none"
+          aria-hidden="true"
+        >
+          {/* Swoosh arc */}
+          <path
+            className="logo-swoosh"
+            d="M36 9 C68 9, 89 28, 89 52 C89 71, 77 85, 60 90"
+            stroke="#2563EB"
+            strokeWidth="11"
+            strokeLinecap="round"
+          />
+          {/* Speed lines */}
+          <rect
+            className="speed-line"
+            x="4"
+            y="38"
+            width="26"
+            height="5.5"
+            rx="2.75"
+            fill="#2563EB"
+          />
+          <rect
+            className="speed-line speed-line-2"
+            x="1"
+            y="50"
+            width="20"
+            height="5.5"
+            rx="2.75"
+            fill="#2563EB"
+          />
+          <rect
+            className="speed-line speed-line-3"
+            x="7"
+            y="62"
+            width="13"
+            height="5.5"
+            rx="2.75"
+            fill="#2563EB"
+          />
+          {/* Car (front view) */}
+          <g className="logo-car-group">
+            <path
+              d="M36 56 C36 46, 42 40, 52 40 C62 40, 68 46, 68 56 Z"
+              fill="#1E3A8A"
+            />
+            <path
+              d="M40 54 C41 47.5, 45 44, 52 44 C59 44, 63 47.5, 64 54 Z"
+              fill="#DBEAFE"
+            />
+            <rect x="31" y="55" width="42" height="17" rx="6" fill="#1E3A8A" />
+            <rect x="36" y="60" width="9" height="4" rx="2" fill="#FDE68A" />
+            <rect x="59" y="60" width="9" height="4" rx="2" fill="#FDE68A" />
+            <rect
+              x="47"
+              y="61"
+              width="10"
+              height="2.5"
+              rx="1.25"
+              fill="#93C5FD"
+            />
+          </g>
+          {/* Road hump */}
+          <path d="M10 95 Q52 70 94 95 L10 95 Z" fill="#1E3A8A" />
+          <path d="M48 84 L51 78 L53 78 L56 84 Z" fill="#fff" opacity=".85" />
+        </svg>
 
-      {/* Wordmark */}
-      <div className="logo-fade-up text-[27px] font-extrabold leading-none tracking-tight" style={{ animationDelay: ".15s" }}>
-        <span className="text-[#0F172A]">Drive</span>
-        <span className="text-[#2563EB]">Ease</span>
-      </div>
+        {/* Wordmark */}
+        <div
+          className="logo-fade-up text-[27px] font-extrabold leading-none tracking-tight"
+          style={{ animationDelay: ".15s" }}
+        >
+          <span className="text-[#0F172A]">Drive</span>
+          <span className="text-[#2563EB]">Ease</span>
+        </div>
       </div>
       {/* Tagline under the full logo row */}
-      <div className="logo-fade-up text-[9.5px] font-semibold tracking-[.2em] text-[#64748B] mt-1" style={{ animationDelay: ".3s" }}>
+      <div
+        className="logo-fade-up text-[9.5px] font-semibold tracking-[.2em] text-[#64748B] mt-1"
+        style={{ animationDelay: ".3s" }}
+      >
         SMART DRIVING INSTITUTE MANAGEMENT
       </div>
     </div>
@@ -285,25 +386,30 @@ function AnimatedLogo() {
 }
 
 /* ───────────────────────── Feature card ───────────────────────── */
-function Feature({ icon, tint, label }) {
-  const [line1, line2] = label.split("\n");
-  return (
-    <div className="flex flex-col items-center text-center py-3.5 px-2">
-      <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${tint}`}>{icon}</div>
-      <p className="text-[#0F172A] text-[12px] font-semibold leading-snug mt-2">
-        {line1}
-        <br />
-        {line2}
-      </p>
+const Feature = ({ icon, tint, label }) => (
+  <div className="flex flex-col items-center justify-center py-4 px-3">
+    <div
+      className={`w-12 h-12 rounded-xl flex items-center justify-center ${tint}`}
+    >
+      {icon}
     </div>
-  );
-}
+
+    <p className="mt-2 text-[14px] font-medium text-center text-[#0F172A] whitespace-pre-line">
+      {label}
+    </p>
+  </div>
+);
 
 /* ───────────────────────── Hero illustration (unused fallback — image replaced it) ───────────────────────── */
 // eslint-disable-next-line no-unused-vars
 function HeroIllustration() {
   return (
-    <svg viewBox="0 0 640 400" className="w-full h-full" preserveAspectRatio="xMidYMax meet" aria-hidden="true">
+    <svg
+      viewBox="0 0 640 400"
+      className="w-full h-full"
+      preserveAspectRatio="xMidYMax meet"
+      aria-hidden="true"
+    >
       <defs>
         <linearGradient id="glassGrad" x1="0" y1="0" x2="0" y2="1">
           <stop offset="0%" stopColor="#9CC3EE" />
@@ -379,9 +485,21 @@ function HeroIllustration() {
         <rect x="516" y="256" width="30" height="24" fill="#7FA8D6" />
         {/* DRIVING SCHOOL sign */}
         <g>
-          <polygon points="400,130 582,148 582,176 400,158" fill="url(#signGrad)" />
+          <polygon
+            points="400,130 582,148 582,176 400,158"
+            fill="url(#signGrad)"
+          />
           <polygon points="400,130 400,158 386,154 386,126" fill="#1E40AF" />
-          <text x="491" y="161" fill="#fff" fontSize="19" fontWeight="700" fontFamily="Arial, sans-serif" textAnchor="middle" transform="rotate(5.6 491 161)">
+          <text
+            x="491"
+            y="161"
+            fill="#fff"
+            fontSize="19"
+            fontWeight="700"
+            fontFamily="Arial, sans-serif"
+            textAnchor="middle"
+            transform="rotate(5.6 491 161)"
+          >
             DRIVING SCHOOL
           </text>
         </g>
@@ -407,9 +525,20 @@ function HeroIllustration() {
         fill="#454D5C"
       />
       {/* Yellow edge line */}
-      <path d="M640 348 C520 314, 452 292, 410 278" stroke="#F4C530" strokeWidth="6" fill="none" />
+      <path
+        d="M640 348 C520 314, 452 292, 410 278"
+        stroke="#F4C530"
+        strokeWidth="6"
+        fill="none"
+      />
       {/* White edge line (left) */}
-      <path d="M0 376 C130 350, 268 308, 352 284" stroke="#E7EBF1" strokeWidth="5" fill="none" opacity=".9" />
+      <path
+        d="M0 376 C130 350, 268 308, 352 284"
+        stroke="#E7EBF1"
+        strokeWidth="5"
+        fill="none"
+        opacity=".9"
+      />
       {/* Center dashes */}
       <path
         d="M70 400 C160 366, 280 322, 378 290"
@@ -422,27 +551,82 @@ function HeroIllustration() {
 
       {/* ── Car (rear view) ── */}
       <g transform="translate(115,242)">
-        <ellipse cx="80" cy="142" rx="92" ry="12" fill="#1F2937" opacity=".25" />
+        <ellipse
+          cx="80"
+          cy="142"
+          rx="92"
+          ry="12"
+          fill="#1F2937"
+          opacity=".25"
+        />
         {/* Roof sign */}
-        <rect x="49" y="-6" width="62" height="20" rx="5" fill="#fff" stroke="#D7DEE8" />
-        <text x="80" y="8" fill="#1E3A8A" fontSize="10.5" fontWeight="700" fontFamily="Arial, sans-serif" textAnchor="middle">
+        <rect
+          x="49"
+          y="-6"
+          width="62"
+          height="20"
+          rx="5"
+          fill="#fff"
+          stroke="#D7DEE8"
+        />
+        <text
+          x="80"
+          y="8"
+          fill="#1E3A8A"
+          fontSize="10.5"
+          fontWeight="700"
+          fontFamily="Arial, sans-serif"
+          textAnchor="middle"
+        >
           DRIVE SAFE
         </text>
         <rect x="62" y="14" width="4" height="7" fill="#94A3B8" />
         <rect x="94" y="14" width="4" height="7" fill="#94A3B8" />
         {/* Cabin */}
-        <path d="M38 74 C40 44, 52 22, 80 22 C108 22, 120 44, 122 74 Z" fill="url(#carGrad)" />
-        <path d="M46 68 C49 46, 58 31, 80 31 C102 31, 111 46, 114 68 L46 68 Z" fill="#0F1B33" />
-        <path d="M50 65 C53 47, 61 34, 80 34 C99 34, 107 47, 110 65 Z" fill="#1E3A5C" />
+        <path
+          d="M38 74 C40 44, 52 22, 80 22 C108 22, 120 44, 122 74 Z"
+          fill="url(#carGrad)"
+        />
+        <path
+          d="M46 68 C49 46, 58 31, 80 31 C102 31, 111 46, 114 68 L46 68 Z"
+          fill="#0F1B33"
+        />
+        <path
+          d="M50 65 C53 47, 61 34, 80 34 C99 34, 107 47, 110 65 Z"
+          fill="#1E3A5C"
+        />
         {/* Body */}
-        <rect x="14" y="72" width="132" height="56" rx="14" fill="url(#carGrad)" />
+        <rect
+          x="14"
+          y="72"
+          width="132"
+          height="56"
+          rx="14"
+          fill="url(#carGrad)"
+        />
         {/* Trunk line */}
-        <line x1="26" y1="92" x2="134" y2="92" stroke="#1E40AF" strokeWidth="2.5" opacity=".7" />
+        <line
+          x1="26"
+          y1="92"
+          x2="134"
+          y2="92"
+          stroke="#1E40AF"
+          strokeWidth="2.5"
+          opacity=".7"
+        />
         {/* Tail lights */}
         <rect x="22" y="98" width="24" height="10" rx="5" fill="#F8FAFC" />
         <rect x="114" y="98" width="24" height="10" rx="5" fill="#F8FAFC" />
         {/* License plate */}
-        <rect x="62" y="102" width="36" height="16" rx="3" fill="#fff" stroke="#CBD5E1" />
+        <rect
+          x="62"
+          y="102"
+          width="36"
+          height="16"
+          rx="3"
+          fill="#fff"
+          stroke="#CBD5E1"
+        />
         {/* Bumper */}
         <rect x="20" y="118" width="120" height="8" rx="4" fill="#1E40AF" />
         {/* Wheels */}

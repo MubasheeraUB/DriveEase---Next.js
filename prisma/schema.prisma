@@ -8,12 +8,15 @@ datasource db {
 }
 
 model User {
-  id        Int      @id @default(autoincrement())
+  id        Int       @id @default(autoincrement())
   name      String
-  email     String   @unique
+  email     String    @unique
   password  String
-  role      String   @default("user")
-  createdAt DateTime @default(now())
+  phone     String?
+  avatarUrl String?
+  role      String    @default("user")
+  createdAt DateTime  @default(now())
+  updatedAt DateTime? @updatedAt
 }
 
 model Driver {
@@ -132,8 +135,99 @@ model Payment {
   paymentDate   DateTime
   paymentMethod String
   paymentStatus String   @default("partial")
+  invoiceNumber String?  @unique
   remarks       String?
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
   student       Student  @relation(fields: [studentId], references: [id])
+}
+
+// ─── Messages: Inbox from students / visitors / staff ───────────────────────
+model Message {
+  id        Int       @id @default(autoincrement())
+  senderName  String
+  senderEmail String?
+  senderPhone String?
+  subject     String
+  body        String
+  category    String    @default("general") // general | inquiry | complaint | feedback | support
+  priority    String    @default("normal")  // low | normal | high
+  isRead      Boolean   @default(false)
+  isStarred   Boolean   @default(false)
+  isArchived  Boolean   @default(false)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+}
+
+// ─── Notifications: System-generated alerts ─────────────────────────────────
+model Notification {
+  id        Int       @id @default(autoincrement())
+  title     String
+  body      String
+  type      String    @default("info") // info | success | warning | error
+  category  String    @default("system") // system | payment | schedule | enrollment | license | vehicle
+  link      String?
+  isRead    Boolean   @default(false)
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+}
+
+// ─── Settings: School / Business Profile (singleton) ────────────────────────
+model SchoolProfile {
+  id                 Int      @id @default(autoincrement())
+  schoolName         String   @default("DriveEase Driving School")
+  tagline            String?
+  email              String   @default("info@driveease.com")
+  phone              String   @default("")
+  alternatePhone     String?
+  website            String?
+  registrationNumber String?
+  establishedYear    Int?
+  logoUrl            String?
+  addressLine        String   @default("")
+  city               String   @default("")
+  state              String   @default("")
+  pincode            String   @default("")
+  country            String   @default("India")
+  currency           String   @default("INR")
+  currencySymbol     String   @default("₹")
+  timezone           String   @default("Asia/Kolkata")
+  workingHoursStart  String   @default("09:00")
+  workingHoursEnd    String   @default("18:00")
+  workingDays        String   @default("Mon,Tue,Wed,Thu,Fri,Sat")
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+}
+
+// ─── Settings: System Preferences (singleton) ───────────────────────────────
+model SystemSetting {
+  id                   Int      @id @default(autoincrement())
+  defaultCourseFee     Float    @default(15000)
+  defaultSessionMins   Int      @default(60)
+  maxStudentsPerBatch  Int      @default(10)
+  autoAssignInstructor Boolean  @default(false)
+  lateFeeEnabled       Boolean  @default(false)
+  lateFeePercentage    Float    @default(5)
+  paymentReminderDays  Int      @default(3)
+  dateFormat           String   @default("DD/MM/YYYY")
+  invoicePrefix        String   @default("INV")
+  maintenanceMode      Boolean  @default(false)
+  createdAt            DateTime @default(now())
+  updatedAt            DateTime @updatedAt
+}
+
+// ─── Settings: Notification Preferences (singleton) ─────────────────────────
+model NotificationSetting {
+  id                  Int      @id @default(autoincrement())
+  emailEnabled        Boolean  @default(true)
+  smsEnabled          Boolean  @default(false)
+  inAppEnabled        Boolean  @default(true)
+  paymentDueAlert     Boolean  @default(true)
+  scheduleReminder    Boolean  @default(true)
+  newEnrollmentAlert  Boolean  @default(true)
+  licenseExpiryAlert  Boolean  @default(true)
+  vehicleServiceAlert Boolean  @default(false)
+  dailySummary        Boolean  @default(false)
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
 }

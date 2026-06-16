@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, createContext, useContext } from "react";
 import {
   FaCar, FaCheckCircle, FaTools, FaExclamationTriangle,
   FaSearch, FaFilter, FaSync, FaPlus, FaEllipsisV, FaEdit, FaTrash, FaEye,
@@ -74,6 +74,27 @@ function DonutCard({ title, data, colors }) {
   );
 }
 
+const FieldContext = createContext(null);
+
+// Module-level so its identity is stable across renders (prevents input focus loss).
+function F({ label, name, type = "text", options }) {
+  const { form, set } = useContext(FieldContext);
+  return (
+    <div className="flex flex-col gap-1">
+      <label className="text-[10px] text-[#64748B] uppercase tracking-wide">{label}</label>
+      {options ? (
+        <select value={form[name]} onChange={e=>set(name,e.target.value)}
+          className="bg-[#F8FAFC] border border-[#E2E8F0] rounded-xl px-3 py-2 text-sm text-[#0F172A] focus:outline-none focus:border-blue-500">
+          {options.map(o=><option key={o.v??o} value={o.v??o}>{o.l??o}</option>)}
+        </select>
+      ) : (
+        <input type={type} value={form[name]||""} onChange={e=>set(name,e.target.value)}
+          className="bg-[#F8FAFC] border border-[#E2E8F0] rounded-xl px-3 py-2 text-sm text-[#0F172A] focus:outline-none focus:border-blue-500"/>
+      )}
+    </div>
+  );
+}
+
 function VehicleModal({ vehicle, onClose, onSave }) {
   const isEdit = !!vehicle?.id;
   const blank = {
@@ -110,21 +131,6 @@ function VehicleModal({ vehicle, onClose, onSave }) {
     finally { setSaving(false); }
   };
 
-  const F = ({ label, name, type="text", options }) => (
-    <div className="flex flex-col gap-1">
-      <label className="text-[10px] text-[#64748B] uppercase tracking-wide">{label}</label>
-      {options ? (
-        <select value={form[name]} onChange={e=>set(name,e.target.value)}
-          className="bg-[#F8FAFC] border border-[#E2E8F0] rounded-xl px-3 py-2 text-sm text-[#0F172A] focus:outline-none focus:border-blue-500">
-          {options.map(o=><option key={o.v??o} value={o.v??o}>{o.l??o}</option>)}
-        </select>
-      ) : (
-        <input type={type} value={form[name]||""} onChange={e=>set(name,e.target.value)}
-          className="bg-[#F8FAFC] border border-[#E2E8F0] rounded-xl px-3 py-2 text-sm text-[#0F172A] focus:outline-none focus:border-blue-500"/>
-      )}
-    </div>
-  );
-
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm">
       <div className="bg-white border border-[#E2E8F0] rounded-3xl w-full max-w-2xl mx-4 max-h-[90vh] overflow-y-auto">
@@ -132,6 +138,7 @@ function VehicleModal({ vehicle, onClose, onSave }) {
           <h2 className="text-base font-bold">{isEdit ? "Edit Vehicle" : "Add New Vehicle"}</h2>
           <button onClick={onClose} className="text-[#64748B] hover:text-[#0F172A]">✕</button>
         </div>
+        <FieldContext.Provider value={{ form, set }}>
         <form onSubmit={handleSubmit} className="p-5 grid grid-cols-2 gap-3">
           <F label="Vehicle Name *"    name="vehicleName"/>
           <F label="Vehicle Number *"  name="vehicleNumber"/>
@@ -158,6 +165,7 @@ function VehicleModal({ vehicle, onClose, onSave }) {
             </button>
           </div>
         </form>
+        </FieldContext.Provider>
       </div>
     </div>
   );
@@ -195,6 +203,16 @@ export default function VehiclesPage() {
   }, []);
 
   useEffect(() => { fetchStats(); fetchVehicles(); }, []);
+
+  // Open the Add modal automatically when arriving via a Quick Action (?new=1)
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const params = new URLSearchParams(window.location.search);
+    if (params.get("new") === "1") {
+      setModal({ mode: "add" });
+      window.history.replaceState(null, "", window.location.pathname);
+    }
+  }, []);
 
   const filtered = vehicles.filter(v => {
     const q = search.toLowerCase();

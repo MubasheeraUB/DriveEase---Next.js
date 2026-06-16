@@ -7,12 +7,12 @@ export default function QuickActions() {
   const router = useRouter();
 
   const actions = [
-    { icon: <FaUserPlus />,          title: "Add Student",    color: "text-[#2563EB]",  onClick: () => router.push("/students") },
-    { icon: <FaChalkboardTeacher />, title: "Add Instructor", color: "text-purple-600",  onClick: () => router.push("/instructors") },
-    { icon: <FaCar />,               title: "Add Vehicle",    color: "text-[#10B981]",  onClick: () => router.push("/vehicles") },
-    { icon: <FaCalendarAlt />,       title: "Schedule",       color: "text-[#F59E0B]",  onClick: () => router.push("/training-schedules") },
-    { icon: <FaMoneyBillWave />,     title: "Payments",       color: "text-pink-500",   onClick: () => router.push("/payments") },
-    { icon: <FaChartBar />,          title: "Reports",        color: "text-cyan-500",   onClick: () => {} },
+    { icon: <FaUserPlus />,          title: "Add Student",    color: "text-[#2563EB]",  onClick: () => router.push("/students?new=1") },
+    { icon: <FaChalkboardTeacher />, title: "Add Instructor", color: "text-purple-600",  onClick: () => router.push("/instructors?new=1") },
+    { icon: <FaCar />,               title: "Add Vehicle",    color: "text-[#10B981]",  onClick: () => router.push("/vehicles?new=1") },
+    { icon: <FaCalendarAlt />,       title: "Schedule",       color: "text-[#F59E0B]",  onClick: () => router.push("/training-schedules?new=1") },
+    { icon: <FaMoneyBillWave />,     title: "Record Payment", color: "text-pink-500",   onClick: () => router.push("/payments?new=1") },
+    { icon: <FaChartBar />,          title: "Reports",        color: "text-cyan-500",   onClick: () => router.push("/reports") },
   ];
 
   return (

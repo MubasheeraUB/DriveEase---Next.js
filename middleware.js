@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { jwtVerify } from "jose";
 
 // Protected routes that require authentication
-const protectedPaths = ["/dashboard", "/students", "/instructors", "/courses", "/vehicles", "/training-schedules", "/payments"];
+const protectedPaths = ["/dashboard", "/students", "/instructors", "/courses", "/vehicles", "/training-schedules", "/payments", "/reports", "/messages", "/notifications", "/settings"];
 
 export async function middleware(request) {
   const { pathname } = request.nextUrl;
@@ -37,5 +37,9 @@ export const config = {
     "/vehicles/:path*",
     "/training-schedules/:path*",
     "/payments/:path*",
+    "/reports/:path*",
+    "/messages/:path*",
+    "/notifications/:path*",
+    "/settings/:path*",
   ],
 };

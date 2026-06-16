@@ -28,15 +28,21 @@ export async function PUT(request, { params }) {
     const existing = await prisma.trainingSchedule.findUnique({ where: { id } });
     if (!existing) return NextResponse.json({ message: "Training schedule not found" }, { status: 404 });
 
-    const { studentId, driverId, vehicleId, trainingDate, startTime, endTime, sessionType, status, remarks } =
-      await request.json();
+    const body = await request.json();
+    const { trainingDate, startTime, endTime, sessionType, status, remarks } = body;
 
     const updated = await prisma.trainingSchedule.update({
       where: { id },
       data: {
-        studentId, driverId, vehicleId,
-        trainingDate: new Date(trainingDate),
-        startTime, endTime, sessionType, status, remarks,
+        studentId: body.studentId != null ? parseInt(body.studentId) : existing.studentId,
+        driverId: body.driverId != null ? parseInt(body.driverId) : existing.driverId,
+        vehicleId: body.vehicleId != null ? parseInt(body.vehicleId) : existing.vehicleId,
+        trainingDate: trainingDate ? new Date(trainingDate) : existing.trainingDate,
+        startTime: startTime ?? existing.startTime,
+        endTime: endTime ?? existing.endTime,
+        sessionType: sessionType ?? existing.sessionType,
+        status: status ?? existing.status,
+        remarks: remarks ?? existing.remarks,
       },
       include: { student: true, driver: true, vehicle: true },
     });

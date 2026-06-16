@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, createContext, useContext } from "react";
 import { useRouter } from "next/navigation";
 import {
   FaUserGraduate, FaUserCheck, FaIdCard, FaCar,
@@ -27,6 +27,27 @@ function initials(name) {
 }
 function stuId(id) {
   return `STU-${String(id).padStart(4, "0")}`;
+}
+
+const FieldContext = createContext(null);
+
+// Module-level so its identity is stable across renders (prevents input focus loss).
+function Field({ label, name, type = "text", options }) {
+  const { form, set } = useContext(FieldContext);
+  return (
+    <div className="flex flex-col gap-1">
+      <label className="text-xs text-[#64748B]">{label}</label>
+      {options ? (
+        <select value={form[name]} onChange={(e) => set(name, e.target.value)}
+          className="bg-[#F8FAFC] border border-[#E2E8F0] rounded-xl px-3 py-2 text-sm text-[#0F172A] focus:outline-none focus:border-[#2563EB]">
+          {options.map((o) => <option key={o} value={o}>{o}</option>)}
+        </select>
+      ) : (
+        <input type={type} value={form[name] || ""} onChange={(e) => set(name, e.target.value)}
+          className="bg-[#F8FAFC] border border-[#E2E8F0] rounded-xl px-3 py-2 text-sm text-[#0F172A] focus:outline-none focus:border-[#2563EB]" />
+      )}
+    </div>
+  );
 }
 
 function StudentModal({ student, onClose, onSave }) {
@@ -66,21 +87,6 @@ function StudentModal({ student, onClose, onSave }) {
     }
   };
 
-  const Field = ({ label, name, type = "text", options }) => (
-    <div className="flex flex-col gap-1">
-      <label className="text-xs text-[#64748B]">{label}</label>
-      {options ? (
-        <select value={form[name]} onChange={(e) => set(name, e.target.value)}
-          className="bg-[#F8FAFC] border border-[#E2E8F0] rounded-xl px-3 py-2 text-sm text-[#0F172A] focus:outline-none focus:border-[#2563EB]">
-          {options.map((o) => <option key={o} value={o}>{o}</option>)}
-        </select>
-      ) : (
-        <input type={type} value={form[name] || ""} onChange={(e) => set(name, e.target.value)}
-          className="bg-[#F8FAFC] border border-[#E2E8F0] rounded-xl px-3 py-2 text-sm text-[#0F172A] focus:outline-none focus:border-[#2563EB]" />
-      )}
-    </div>
-  );
-
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
       <div className="bg-white border border-[#E2E8F0] rounded-3xl w-full max-w-2xl mx-4 max-h-[90vh] overflow-y-auto shadow-2xl">
@@ -88,6 +94,7 @@ function StudentModal({ student, onClose, onSave }) {
           <h2 className="text-xl font-semibold text-[#0F172A]">{isEdit ? "Edit Student" : "Add New Student"}</h2>
           <button onClick={onClose} className="text-[#64748B] hover:text-[#0F172A] text-xl">✕</button>
         </div>
+        <FieldContext.Provider value={{ form, set }}>
         <form onSubmit={handleSubmit} className="p-6 grid grid-cols-2 gap-4">
           <Field label="Full Name *" name="fullName" />
           <Field label="Email" name="email" type="email" />
@@ -112,6 +119,7 @@ function StudentModal({ student, onClose, onSave }) {
             </button>
           </div>
         </form>
+        </FieldContext.Provider>
       </div>
     </div>
   );
@@ -158,6 +166,16 @@ export default function StudentsPage() {
 
   useEffect(() => { fetchStats(); }, []);
   useEffect(() => { fetchStudents(page); }, [page]);
+
+  // Open the Add modal automatically when arriving via a Quick Action (?new=1)
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const params = new URLSearchParams(window.location.search);
+    if (params.get("new") === "1") {
+      setModal({ mode: "add" });
+      window.history.replaceState(null, "", window.location.pathname);
+    }
+  }, []);
 
   const handleFilter = () => { setPage(1); fetchStudents(1); };
   const handleReset = () => {

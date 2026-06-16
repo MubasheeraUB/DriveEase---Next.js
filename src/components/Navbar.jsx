@@ -1,6 +1,7 @@
 "use client";
 
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 import { FaBell, FaSearch } from "react-icons/fa";
 
 const PAGE_TITLES = {
@@ -12,12 +13,35 @@ const PAGE_TITLES = {
   "/training-schedules": "Classes & Schedule",
   "/payments":           "Payments",
   "/reports":            "Reports",
+  "/messages":           "Messages",
+  "/notifications":      "Notifications",
   "/settings":           "Settings",
 };
 
 export default function Navbar() {
   const pathname = usePathname();
+  const router = useRouter();
   const title = Object.entries(PAGE_TITLES).find(([k]) => pathname.startsWith(k))?.[1] || "DriveEase";
+
+  const [unread, setUnread] = useState(0);
+
+  useEffect(() => {
+    const token = typeof window !== "undefined" ? localStorage.getItem("token") : null;
+    if (!token) return;
+    const hdr = { Authorization: `Bearer ${token}` };
+
+    const loadUnread = async () => {
+      try {
+        const r = await fetch("/api/notifications/stats", { headers: hdr });
+        const d = await r.json();
+        setUnread(d?.unread || 0);
+      } catch {}
+    };
+
+    loadUnread();
+    const interval = setInterval(loadUnread, 60000);
+    return () => clearInterval(interval);
+  }, [pathname]);
 
   const today  = new Date();
   const dateStr = today.toLocaleDateString("en-IN", { day: "2-digit", month: "short", year: "numeric" });
@@ -40,11 +64,17 @@ export default function Navbar() {
           />
         </div>
 
-        <button className="relative w-8 h-8 rounded-xl bg-[#F8FAFC] border border-[#E2E8F0] flex items-center justify-center text-[#64748B] hover:text-[#0F172A] hover:bg-[#DBEAFE] transition">
+        <button
+          onClick={() => router.push("/notifications")}
+          title="Notifications"
+          className="relative w-8 h-8 rounded-xl bg-[#F8FAFC] border border-[#E2E8F0] flex items-center justify-center text-[#64748B] hover:text-[#0F172A] hover:bg-[#DBEAFE] transition"
+        >
           <FaBell className="text-sm" />
-          <span className="absolute -top-1 -right-1 bg-[#2563EB] text-[9px] w-4 h-4 rounded-full flex items-center justify-center font-bold text-white">
-            5
-          </span>
+          {unread > 0 && (
+            <span className="absolute -top-1 -right-1 bg-[#2563EB] text-[9px] min-w-4 h-4 px-1 rounded-full flex items-center justify-center font-bold text-white">
+              {unread > 99 ? "99+" : unread}
+            </span>
+          )}
         </button>
 
         <div className="w-8 h-8 rounded-xl bg-[#2563EB] flex items-center justify-center text-sm font-bold text-white">

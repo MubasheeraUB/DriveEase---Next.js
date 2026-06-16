@@ -25,17 +25,23 @@ export async function PUT(request, { params }) {
     const existing = await prisma.payment.findUnique({ where: { id } });
     if (!existing) return NextResponse.json({ message: "Payment not found" }, { status: 404 });
 
-    const { totalAmount, paidAmount, paymentDate, paymentMethod, remarks } = await request.json();
+    const body = await request.json();
+    const totalAmount = body.totalAmount != null ? parseFloat(body.totalAmount) : existing.totalAmount;
+    const paidAmount = body.paidAmount != null ? parseFloat(body.paidAmount) : existing.paidAmount;
 
     const balanceAmount = totalAmount - paidAmount;
-    const paymentStatus = balanceAmount <= 0 ? "paid" : "partial";
+    const paymentStatus = balanceAmount <= 0 ? "paid" : paidAmount <= 0 ? "pending" : "partial";
 
     const updated = await prisma.payment.update({
       where: { id },
       data: {
-        totalAmount, paidAmount, balanceAmount,
-        paymentDate: new Date(paymentDate),
-        paymentMethod, paymentStatus, remarks,
+        totalAmount,
+        paidAmount,
+        balanceAmount,
+        paymentDate: body.paymentDate ? new Date(body.paymentDate) : existing.paymentDate,
+        paymentMethod: body.paymentMethod ?? existing.paymentMethod,
+        paymentStatus,
+        remarks: body.remarks ?? existing.remarks,
       },
       include: { student: true },
     });
